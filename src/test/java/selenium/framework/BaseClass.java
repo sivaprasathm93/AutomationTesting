@@ -27,7 +27,7 @@ public class BaseClass extends ExtentManager{
     public void beforeSuite()  {
         initializeDriver(browser);
         getDriver().manage().window().maximize();
-        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
         extent = ExtentManager.getInstance();
     }
 

@@ -1,7 +1,9 @@
 package selenium.framework;
 
 import com.aventstack.extentreports.Status;
+import org.omg.CORBA.TIMEOUT;
 import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -9,6 +11,7 @@ import org.testng.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class CommonUtils extends  BaseClass{
     private WebDriverWait wait;
@@ -50,6 +53,7 @@ public class CommonUtils extends  BaseClass{
      * @param textToEnter text to enter
      */
     public void sendValue(By locator, String textToEnter) {
+        getWebElement(locator).clear();
         getWebElement(locator).sendKeys(textToEnter);
         infoPass(locator+" is entered with "+textToEnter);
     }
@@ -73,6 +77,12 @@ public class CommonUtils extends  BaseClass{
         wait=new WebDriverWait(getDriver(),60);
         wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
         infoPass("waiting for element to be visible "+locator);
+    }
+
+    public void waitUntilElementToBeClickable(By locator){
+        wait=new WebDriverWait(getDriver(),60);
+        wait.until(ExpectedConditions.elementToBeClickable(locator));
+        infoPass("waiting for element to be clickable "+locator);
     }
 
     /**
@@ -150,11 +160,79 @@ public class CommonUtils extends  BaseClass{
 
     public void verifyElementDisplayed(By locator){
         if (getWebElement(locator).isDisplayed()){
-            Assert.assertTrue(true,locator+" is displayed");
             infoPass(locator+ " is displayed");
+            Assert.assertTrue(true,locator+" is displayed");
         }else {
+            infoFail(locator+ " is not displayed");
             Assert.assertTrue(false,locator+" is not displayed");
-            infoPass(locator+ " is not displayed");
         }
     }
+
+    public void pressTABKey(By locator) {
+        getWebElement(locator).sendKeys(Keys.TAB);
+        infoPass("TAB key is clicked");
+    }
+
+    /**
+     * To enter value in text box
+     * @param locator xpath
+     * @param expectedColorHexadecimal text to enter
+     */
+    public void verifyColor(By locator, String expectedColorHexadecimal) {
+        String actualColor=getWebElement(locator).getAttribute("color");
+        Assert.assertEquals(expectedColorHexadecimal,actualColor,"Color is matching");
+        infoPass("color is matching expected: "+expectedColorHexadecimal+" actual color: "+actualColor);
+    }
+
+    public void selectDropdown(By locator,By dropDownValue){
+        WebElement element=getWebElement(locator);
+        Actions act = new Actions(getDriver());
+        act.moveToElement(element).click().build().perform();
+        act.click(getWebElement(dropDownValue)).build().perform();
+    }
+
+    public void mouseClick(By locator){
+        WebElement element=getWebElement(locator);
+        Actions act = new Actions(getDriver());
+        act.moveToElement(element).click().build().perform();
+
+    }
+
+    public void verifyUrl(String expectedUrl){
+       String actualUrl=getDriver().getCurrentUrl();
+       if(expectedUrl.equals(actualUrl)){
+           infoPass("expected "+expectedUrl+" is matching with actual "+actualUrl);
+           Assert.assertTrue(true,"expected "+expectedUrl+" is matching with actual "+actualUrl);
+       }else{
+           infoFail("expected "+expectedUrl+" is not matching with actual "+actualUrl);
+           Assert.assertTrue(false,"expected "+expectedUrl+" is not matching with actual "+actualUrl);
+       }
+       Assert.assertEquals(expectedUrl,actualUrl,"URL is matching");
+    }
+
+    public void verifySearchResults(By locator,int expectedCount){
+        int actualResultsCount=getDriver().findElements(locator).size();
+        if(expectedCount==actualResultsCount){
+            infoPass("expected "+expectedCount+" is matching with actual "+actualResultsCount);
+            Assert.assertTrue(true,"expected "+expectedCount+" is matching with actual "+actualResultsCount);
+        }else{
+            infoFail("expected "+expectedCount+" is not matching with actual "+actualResultsCount);
+            Assert.assertTrue(false,"expected "+expectedCount+" is not matching with actual "+actualResultsCount);
+        }
+    }
+
+    public void clickJS(By locator)throws InterruptedException{
+        waitThread(2);
+        JavascriptExecutor js = (JavascriptExecutor)getDriver();
+        js.executeScript("arguments[0].click();", getWebElement(locator));
+    }
+
+    public void waitThread(long seconds){
+        long startTime= System.currentTimeMillis()/1000;
+        long endTime=startTime+seconds;
+        do{
+            System.out.println("wait explicit....");
+        }while(endTime>=System.currentTimeMillis()/1000);
+    }
+
 }

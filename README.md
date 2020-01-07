@@ -1,4 +1,4 @@
-# Locus.sh automation test case for Flipkart application
+#Automation test case for Flipkart application
 
 This is an hybrid framework which is developed using Java
 

@@ -1,4 +1,4 @@
-<suite name="Locus" verbose="1" >
+<suite name="Siva" verbose="1" >
   <test name="Regression suite 1" >
     <classes>
       <class name="selenium.test.flipkart.Shoes"/>
